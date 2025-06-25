@@ -1,22 +1,12 @@
 from datetime import datetime, timedelta
-import os
-from dotenv import load_dotenv
+import streamlit as st  
 from langchain.chat_models import ChatOpenAI
 from app.calendar_utils import check_availability, book_slot
 
-load_dotenv()
-llm = ChatOpenAI(openai_api_key=os.getenv("OPENAI_API_KEY"))
+
+llm = ChatOpenAI(openai_api_key=st.secrets["api_keys"]["openai_api_key"])
 
 def parse_datetime(text):
-    """
-    Parses common time expressions from user input.
-
-    Args:
-        text (str): User message containing time info.
-
-    Returns:
-        tuple: (start_time, end_time) or (None, None) if not recognized.
-    """
     now = datetime.utcnow()
     text = text.lower()
 
@@ -55,15 +45,6 @@ def parse_datetime(text):
     return start, end
 
 def booking_agent(user_input):
-    """
-    Processes user input and attempts to book a calendar event.
-
-    Args:
-        user_input (str): Natural language request from user.
-
-    Returns:
-        str: Booking confirmation or fallback response.
-    """
     start, end = parse_datetime(user_input)
 
     if not start:
